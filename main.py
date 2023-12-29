@@ -3,7 +3,8 @@ import numpy as np
 
 class GradientDescent:
     def __init__(self, x, y, theta0Values, theta1Values, parameters_path):
-        self.x = np.column_stack((x, y))
+        # self.x = np.column_stack((x, y))
+        self.x = x
         self.y = y
         self.theta0Values = theta0Values
         self.theta1Values = theta1Values
@@ -15,26 +16,60 @@ class GradientDescent:
             self.theta = [0, 0]
 
     def training_algo(self):
-        m = len(self.y)
-        theta0 = self.theta[0]
+        theta = [0, 0]
         # print(f'x = {self.x} theta = {self.theta}')
-        for i in range(10):
-            x_array = np.array(self.x)
-            theta_array = np.array(self.theta)
-            y_array = np.array(self.y)
-            # print(f'xarr = {x_array } theta = {theta_array} y_array = {y_array}')
-            predictionY = np.matmul(x_array, theta_array)
-            # print(predictionY)
-            sub = np.subtract(y_array, predictionY)
-            cost = 0.5 * np.mean(np.square(self.y - predictionY))
-            # print(f'Cost: {cost}')
-            xTranspose = x_array.T
-            dtheta = (1 / m) * np.matmul(x_array.T, sub)
-            # print(f'dtheta = {xTranspose}')
-            self.theta = self.theta - (0.10 * dtheta)
+        x_array = np.array(self.x)
+        y_array = np.array(self.y)
+        theta0 = 0
+        theta1 = 0
+        m = len(self.x)
+        for i in range(10000):
+            j = 0
+            estimatePrice = 0
+            while j < (m - 1):
+                estiPrice = theta0 + (theta1 * self.x[i)
+                tempestimatePrice = estiPrice - self.y[j]
+                estimatePrice += tempestimatePrice
+                j = j + 1
+            print(estimatePrice)
+            theta0 = 0.10 *( 1 / m ) * estimatePrice
+
+            estimatePrice = 0
+            j = 0
+            while j < (m - 1):
+                estiPrice = theta0 + (theta1 * self.x[j])
+                tempestimatePrice = (estiPrice - self.y[j]) * self.x[j]
+                estimatePrice += tempestimatePrice
+                j = j + 1
+            print(estimatePrice)
+            theta1 = 0.10 *(1 / m )* estimatePrice
+            print(theta1)
+            # while i < (m - 1):
+            #     tempestimatePrice = self.x[i] - self.y[i]
+            #     estimatePrice += tempestimatePrice 
+            #     i = i + 1
+
+
+
+            # theta_array = np.array(theta)
+            # # print(f'xarr = {x_array } theta = {theta_array} y_array = {y_array}')
+            # predictionY = np.matmul(x_array, theta_array)
+            # print(f'predictionY = {predictionY}')
+            # sub =  np.subtract(y_array, predictionY)
+            # cost = (1 / (2 * m)) * np.square(self.y - predictionY)
+
+            # print(f'Cost: {cost}, sub = {sub}')
+            # xTranspose = x_array.T
+            # # print(xTranspose)
+            # dtheta = (1 / m) * np.matmul(xTranspose, sub)
+            # print(f'dtheta = {dtheta}')
+            # theta = theta - 0.000001 * dtheta
         
-        print(f'theta = {self.theta}')
-        # self.addThetaValues(self.theta[0], self.theta[1])
+        print(f'theta = {theta0}, theta1 = {theta1}')
+        test = theta0 + (theta1 * 139800)
+        print(f'estimateprice 139800 km = {test} -> real price 3800 ')
+
+        # self.addThetaValues(self.theta0, self.theta[1])
 
         # self.addThetaValues(5, 1)
 
@@ -62,8 +97,8 @@ def main():
         with open(data_path, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                x.append(int(row["km"]))
-                y.append(int(row["price"]))
+                x.append(float(row["km"]))
+                y.append(float(row["price"]))
     except FileNotFoundError:
         print(f'File {data_path} not found.')
         return
@@ -75,8 +110,8 @@ def main():
         with open(parameters_path, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                theta0Values.append(int(row["theta0"]))
-                theta1Values.append(int(row["theta1"]))
+                theta0Values.append(float(row["theta0"]))
+                theta1Values.append(float(row["theta1"]))
     except FileNotFoundError:
         print(f'File {parameters_path} not found, starting theta values with 0.')
     except Exception as e:
