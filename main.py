@@ -1,94 +1,83 @@
 import csv
 import numpy as np
 
+# class GradientDescent:
+#     def __init__(self, X, Y):
+#         self.X = np.array(X)
+#         self.Y = np.array(Y)
+#         self.theta = [[0] * len(Y), [0] * len(Y)]
+
+#     def predict(self):  
+#         Y = []
+#         i = 0
+#         for index, x in enumerate(self.X):
+#             estimatePrice = self.theta[0][index] + (self.theta[1][index] * x)
+#             Y.append(estimatePrice)
+#         print(f"predict: {Y}")
+#         return Y
+
+#     def training(self):
+#         m = len(self.Y)
+#         for i in range(7):
+#             Ypredict = np.array(self.predict())
+#             # print(f'Y = {self.Y}')
+#             # print(f'Ypredict = {Ypredict}')
+#             self.theta[0] = 0.01 * (1 / m) * np.subtract(Ypredict, self.Y)
+            
+#             self.theta[1] = 0.01 * (1 / m) * np.matmul(np.subtract(Ypredict, self.Y), self.X)
+#             # print(f'theta[0] = {self.theta[0]}, theta[1]= {self.theta[1]}')
+#             print(f'f{np.sum(np.matmul(np.subtract(Ypredict, self.Y), self.X))}')
+
+#         test = self.theta[0] + (self.theta[1] * 166800)
+#         # print(f'result 166800km ,5800 price to guess-> {test}, m = {m}')
+
+#     # def addThetaValues(self, theta0, theta1):
+#     #     self.theta0Values.append(theta0)
+#     #     self.theta1Values.append(theta1)
+#     #     with open(self.parameters_path, mode='w') as param_file:
+#     #         param_file.write("theta0,theta1\n")
+#     #         for i in range(len(self.theta0Values)):
+#     #             param_file.write(str(self.theta0Values[i]))
+#     #             param_file.write(",")
+#     #             param_file.write(str(self.theta1Values[i]))
+#     #             param_file.write("\n")
+
 class GradientDescent:
-    def __init__(self, x, y, theta0Values, theta1Values, parameters_path):
-        # self.x = np.column_stack((x, y))
-        self.x = x
-        self.y = y
-        self.theta0Values = theta0Values
-        self.theta1Values = theta1Values
-        self.parameters_path = parameters_path
-        self.theta = []
-        if theta0Values and theta1Values:
-            self.theta = [theta0Values[-1], theta1Values[-1]]
-        else:
-            self.theta = [0, 0]
+    def __init__(self, X, Y):
+        self.X = np.array(X)
+        self.Y = np.array(Y)
+        self.theta = np.zeros((2, len(Y)))
 
-    def training_algo(self):
-        theta = [0, 0]
-        # print(f'x = {self.x} theta = {self.theta}')
-        x_array = np.array(self.x)
-        y_array = np.array(self.y)
-        theta0 = 0
-        theta1 = 0
-        m = len(self.x)
-        for i in range(10000):
-            j = 0
-            estimatePrice = 0
-            while j < (m - 1):
-                estiPrice = theta0 + (theta1 * self.x[i)
-                tempestimatePrice = estiPrice - self.y[j]
-                estimatePrice += tempestimatePrice
-                j = j + 1
-            print(estimatePrice)
-            theta0 = 0.10 *( 1 / m ) * estimatePrice
+    def predict(self):  
+        Y = []
+        for index, x in enumerate(self.X):
+            estimatePrice = self.theta[0][index] + (self.theta[1][index] * x)
+            Y.append(estimatePrice)
+        print(f"predict: {Y}")
+        return Y
 
-            estimatePrice = 0
-            j = 0
-            while j < (m - 1):
-                estiPrice = theta0 + (theta1 * self.x[j])
-                tempestimatePrice = (estiPrice - self.y[j]) * self.x[j]
-                estimatePrice += tempestimatePrice
-                j = j + 1
-            print(estimatePrice)
-            theta1 = 0.10 *(1 / m )* estimatePrice
-            print(theta1)
-            # while i < (m - 1):
-            #     tempestimatePrice = self.x[i] - self.y[i]
-            #     estimatePrice += tempestimatePrice 
-            #     i = i + 1
+    def training(self):
+        m = len(self.Y)
+        learningRate = 0.01  # You can experiment with different values
+        for i in range(7):
+            Ypredict = np.array(self.predict())
+
+            self.theta[0] = self.theta[0] - learningRate * (1 / m) * np.sum(Ypredict - self.Y)
+            self.theta[1] = self.theta[1] - learningRate * (1 / m) * np.sum((Ypredict - self.Y) * self.X)
+
+            print(f'Cost: {0.5 * np.mean((Ypredict - self.Y)**2)}')
+
+        test = self.theta[0][7] + (self.theta[1][7] * 166800)
+        print(f'Result 166800 km, $5800 price to guess -> {test}')
 
 
-
-            # theta_array = np.array(theta)
-            # # print(f'xarr = {x_array } theta = {theta_array} y_array = {y_array}')
-            # predictionY = np.matmul(x_array, theta_array)
-            # print(f'predictionY = {predictionY}')
-            # sub =  np.subtract(y_array, predictionY)
-            # cost = (1 / (2 * m)) * np.square(self.y - predictionY)
-
-            # print(f'Cost: {cost}, sub = {sub}')
-            # xTranspose = x_array.T
-            # # print(xTranspose)
-            # dtheta = (1 / m) * np.matmul(xTranspose, sub)
-            # print(f'dtheta = {dtheta}')
-            # theta = theta - 0.000001 * dtheta
-        
-        print(f'theta = {theta0}, theta1 = {theta1}')
-        test = theta0 + (theta1 * 139800)
-        print(f'estimateprice 139800 km = {test} -> real price 3800 ')
-
-        # self.addThetaValues(self.theta0, self.theta[1])
-
-        # self.addThetaValues(5, 1)
-
-    def addThetaValues(self, theta0, theta1):
-        self.theta0Values.append(theta0)
-        self.theta1Values.append(theta1)
-        with open(self.parameters_path, mode='w') as param_file:
-            param_file.write("theta0,theta1\n")
-            for i in range(len(self.theta0Values)):
-                param_file.write(str(self.theta0Values[i]))
-                param_file.write(",")
-                param_file.write(str(self.theta1Values[i]))
-                param_file.write("\n")
 
 def main():
-    x = []
-    y = []
+    X = []
+    Y = []
     theta0Values = []
     theta1Values = []
+    learningRate = 0.10
     data_path = 'data.csv'
     parameters_path = 'parameters.csv'
     
@@ -97,8 +86,8 @@ def main():
         with open(data_path, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                x.append(float(row["km"]))
-                y.append(float(row["price"]))
+                X.append(float(row["km"]))
+                Y.append(float(row["price"]))
     except FileNotFoundError:
         print(f'File {data_path} not found.')
         return
@@ -117,9 +106,10 @@ def main():
     except Exception as e:
         print(f'An error occurred: {e}, quitting the program')
         return
-    print(theta1Values)
-    gradientAlgo = GradientDescent(x, y, theta0Values, theta1Values, parameters_path)
-    gradientAlgo.training_algo()
+    # print(f'X = {X}, Y = {Y}')
+    gradientAlgo = GradientDescent(X, Y)
+    gradientAlgo.training()
+
 
 if __name__ == "__main__":
     main()
