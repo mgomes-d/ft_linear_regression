@@ -45,31 +45,26 @@ import numpy as np
 class GradientDescent:
     def __init__(self, X, Y):
         self.X = np.array(X)
-        self.Y = np.array(Y)
-        self.theta = np.zeros((2, len(Y)))
+        self.X = np.vstack((np.ones((self.X.size, )), self.X)).T
+        self.Y = np.array(Y).reshape(len(Y), 1)
+        self.theta = np.zeros((2, 1))
+        print(f'Y = {self.Y}')
 
-    def predict(self):  
-        Y = []
-        for index, x in enumerate(self.X):
-            estimatePrice = self.theta[0][index] + (self.theta[1][index] * x)
-            Y.append(estimatePrice)
-        print(f"predict: {Y}")
-        return Y
-
-    def training(self):
+    
+    def training(self, learning_rate=0.005, n_iterations=3):
         m = len(self.Y)
-        learningRate = 0.01  # You can experiment with different values
-        for i in range(7):
-            Ypredict = np.array(self.predict())
+        for iteration in range(n_iterations):
+            Y_predict = np.dot(self.X, self.theta)
+            # Mise à jour simultanée des paramètres theta_0 et theta_1
+            cost = (1 / (2*m)) * np.sum(np.square(Y_predict - self.Y))
+            d_theta = (1/m)*np.dot(self.X.T, Y_predict - self.Y)
+            print(f'dtheta = {d_theta} selftheta = {self.theta}')
+            self.theta = self.theta - (learning_rate * d_theta)
+            # print(self.theta, "\ncost", cost)
+        print("Paramètres finaux après descente de gradient :")
+        print(self.theta)
 
-            self.theta[0] = self.theta[0] - learningRate * (1 / m) * np.sum(Ypredict - self.Y)
-            self.theta[1] = self.theta[1] - learningRate * (1 / m) * np.sum((Ypredict - self.Y) * self.X)
-
-            print(f'Cost: {0.5 * np.mean((Ypredict - self.Y)**2)}')
-
-        test = self.theta[0][7] + (self.theta[1][7] * 166800)
-        print(f'Result 166800 km, $5800 price to guess -> {test}')
-
+        return self.theta
 
 
 def main():
@@ -106,10 +101,11 @@ def main():
     except Exception as e:
         print(f'An error occurred: {e}, quitting the program')
         return
-    # print(f'X = {X}, Y = {Y}')
+    print(f'X = {X}, Y = {Y}')
     gradientAlgo = GradientDescent(X, Y)
-    gradientAlgo.training()
-
+    theta = gradientAlgo.training()
+    # test = theta[0] + (theta[1] * 166800)
+    # print(f'result 166800km ,5800 is the price to guess-> {test}')   
 
 if __name__ == "__main__":
     main()
