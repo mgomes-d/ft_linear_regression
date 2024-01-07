@@ -7,20 +7,18 @@ class GradientDescent:
         self.X = np.array(X)
         self.Y = np.array(Y)
         self.theta = np.zeros((2, 1))
-
+        print(f'X = {self.X} Y = {self.Y}')
     def training(self):
         m = len(self.Y)
-        for i in range(3550):
-            # Ypredict = np.array(self.predict())
-            # print(f'Y = {self.Y}')
-            # print(f'Ypredict = {Ypredict}')
+        for i in range(50):
             error = 0
             for j in range(m - 1):
                 estimatePrice = self.theta[0] + (self.theta[1] * self.X[j])
                 price = self.Y[j]
+                # print(self.X[j], self.Y[j])
                 error += estimatePrice - price
-            temptheta0 = 0.00000000000975 * (1 / m) * error
-            self.theta[0] -= temptheta0 
+            # print(error)
+            temptheta0 = 0.00000000000975 * ((1 / m) * error)
 
             error = 0
             for j in range(m - 1):
@@ -28,16 +26,13 @@ class GradientDescent:
                 price = self.Y[j]
                 error += (estimatePrice - price) * self.X[j]
                 
-            temptheta1 = 0.00000000000975 * (1 / m) * error
-            self.theta[1] -= temptheta1 
-            # self.theta[0] = 0.01 * (1 / m) * np.subtract(Ypredict, self.Y)
-            
-            # self.theta[1] = 0.01 * (1 / m) * np.matmul(np.subtract(Ypredict, self.Y), self.X)
-            # print(f'theta[0] = {self.theta[0]}, theta[1]= {self.theta[1]}')
+            temptheta1 = 0.00000000000975 * ((1 / m) * error)
             # print(f'f{np.sum(np.matmul(np.subtract(Ypredict, self.Y), self.X))}')
-
-        for i in range(len(self.X)):
-            self.checking_value(self.X[i],self.Y[i])
+            self.theta[0] -= temptheta0
+            self.theta[1] -= temptheta1
+        print(f'theta[0] = {self.theta[0]}, theta[1]= {self.theta[1]}')
+        # for i in range(len(self.X)):
+        #     self.checking_value(self.X[i],self.Y[i])
 
     def checking_value(self, km, price):
         test = self.theta[0] + (self.theta[1] * km)
@@ -46,7 +41,7 @@ class GradientDescent:
     def plot_regression_line(self):
         # Créer des points pour la ligne de régression
         x_line = np.linspace(min(self.X), max(self.X), 100)
-        y_line = self.theta[0] + self.theta[1] * x_line
+        y_line = self.theta[0] + (self.theta[1] * x_line)
 
         # Tracer le scatter plot
         plt.scatter(self.X, self.Y, color='blue', label='Data Points')
@@ -112,8 +107,8 @@ def main():
         with open(data_path, mode='r') as csv_file:
             csv_reader = csv.DictReader(csv_file)
             for row in csv_reader:
-                X.append(float(row["km"]))
-                Y.append(float(row["price"]))
+                X.append(int(row["km"]))
+                Y.append(int(row["price"]))
     except FileNotFoundError:
         print(f'File {data_path} not found.')
         return
