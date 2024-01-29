@@ -17,15 +17,17 @@ def load_file(path: str) -> pd.DataFrame:
         print(msg)
         return None
 
-def training_algo(df, trainingSet=1000, learningRate=0.0000001):
-    m = df.size
+
+def training_algo(df, trainingSet=1000, learningRate=0.0000000000001):
+    m = len(df)
     theta = np.array([0.0, 0.0])
     for _ in range(trainingSet):
         df_estimate_price = theta[0] + theta[1] * df["km"]
         df_sum = df_estimate_price - df["price"]
-        tmptheta0 = learningRate * (1 / m) * df_sum.sum()
-        tmptheta1 = learningRate * (1 / m) * (df_sum * df["km"]).sum()
-        theta -= np.array([float(tmptheta0), float(tmptheta1)])
+        tmptheta0 = learningRate * ((1 / m) * df_sum.sum())
+        tmptheta1 = learningRate * ((1 / m) * (df_sum * df["km"]).sum())
+        theta[0] -= float(tmptheta0)
+        theta[1] -= float(tmptheta1)
 
     return theta
 
@@ -39,18 +41,19 @@ def main():
         min_vals = df_params.min()
         max_vals = df_params.max()
 
-        normalized_df = (df_params - min_vals) / (max_vals - min_vals)
+        # normalized_df = (df_params - min_vals) / (max_vals - min_vals)
+        normalized_df = df_params
         print(normalized_df)
         theta = np.array(training_algo(normalized_df))
-
-        denormalized_theta = (theta * (max_vals["price"] - min_vals["price"])) + min_vals["price"]
+        # denormalized_theta = (theta * (max_vals["price"] - min_vals["price"])) + min_vals["price"]
+        denormalized_theta = theta
         predictvalue = denormalized_theta[0] + (denormalized_theta[1] * 240000)
-        print(f"Theta values after training: {denormalized_theta}")
+        print(f"Theta values after training: {denormalized_theta} , predict = {predictvalue}")
 
         min_X = df_params['km'].min()
         max_X = df_params['km'].max()
         x_line = np.linspace(min_X, max_X, 100)
-        y_line =  denormalized_theta[0] +  denormalized_theta[1] * x_line
+        y_line =  denormalized_theta[0] + denormalized_theta[1] * x_line
 
         plt.scatter(df_params["km"], df_params["price"])
         plt.plot(x_line, y_line, color='red')
@@ -59,7 +62,6 @@ def main():
         plt.title("Linear Regression")
         plt.show()
         # print(f'km:\n{km}, price:\n{price}')
-
     except AssertionError as msg:
         print(msg)
 
