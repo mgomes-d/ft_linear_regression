@@ -40,11 +40,9 @@ def main():
         min_vals = df_params["price"].min()
         max_vals = df_params["price"].max()
 
-        # normalized_df = (df_params - min_vals) / (max_vals - min_vals)
         normalized_df = df_params
         print(normalized_df)
         theta = np.array(training_algo(normalized_df))
-        # denormalized_theta = (theta * (max_vals - min_vals)) + min_vals
         denormalized_theta = theta
         predictvalue = denormalized_theta[0] + (denormalized_theta[1] * 240000)
         print(f"Theta values after training: {denormalized_theta} , predict = {predictvalue}")
@@ -60,7 +58,6 @@ def main():
         plt.ylabel("Price")
         plt.title("Linear Regression")
         plt.show()
-        # print(f'km:\n{km}, price:\n{price}')
     except AssertionError as msg:
         print(msg)
 
