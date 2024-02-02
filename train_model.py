@@ -18,14 +18,17 @@ def load_file(path: str) -> pd.DataFrame:
         return None
 
 
-def training_algo(df, trainingSet=1000, learningRate=0.0000000000001):
+def training_algo(df, trainingSet=1000, learningRate=0.0000000001):
     m = len(df)
     theta = np.array([0.0, 0.0])
     for _ in range(trainingSet):
-        df_estimate_price = theta[0] + theta[1] * df["km"]
+        df_estimate_price = theta[0] + (theta[1] * df["km"])
         df_sum = df_estimate_price - df["price"]
-        tmptheta0 = learningRate * ((1 / m) * df_sum.sum())
-        tmptheta1 = learningRate * ((1 / m) * (df_sum * df["km"]).sum())
+        print(df_sum.values, " and ", df_sum.sum(), "and", sum(df_sum))
+        gradient_theta0 = (1 / m) * df_sum.sum()
+        tmptheta0 = learningRate * gradient_theta0
+        gradient_theta1 = (1 / m) * (df_sum * df["km"]).sum()
+        tmptheta1 = learningRate * gradient_theta1
         theta[0] -= float(tmptheta0)
         theta[1] -= float(tmptheta1)
     return theta
@@ -40,7 +43,12 @@ def main():
         min_vals = df_params["price"].min()
         max_vals = df_params["price"].max()
 
+        mileage = np.array(df_params['km'])
+        price = np.array(df_params['price'])
+        mileage_norm = (mileage - np.mean(mileage)) / np.std(mileage)
+
         normalized_df = df_params
+        normalized_df["km"] = mileage_norm
         print(normalized_df)
         theta = np.array(training_algo(normalized_df))
         denormalized_theta = theta
