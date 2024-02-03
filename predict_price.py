@@ -20,7 +20,7 @@ def main():
     df = load_file("parameters.csv")
     value = input("give a certain mileage:\n")
     predict = df["theta0"].values.astype(float) + (df["theta1"].values.astype(float) * float(value))
-    print("the predict = ",predict)
+    print("the predict =",predict[0])
 
 if __name__ == "__main__":
     main()

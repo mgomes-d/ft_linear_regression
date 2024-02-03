@@ -34,6 +34,7 @@ def training_algo(df, trainingSet=1000, learningRate=0.1):
 
 def save_theta(theta):
     try:
+        #1 column et -1 permet de faire automatiquement
         theta_df = pd.DataFrame(theta.reshape(1, -1), columns=['theta0', 'theta1'])
         theta_df.to_csv("parameters.csv", index=False)
     except Exception as e:
