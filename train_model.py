@@ -18,7 +18,7 @@ def load_file(path: str) -> pd.DataFrame:
         return None
 
 
-def training_algo(df, trainingSet=1000, learningRate=0.01):
+def training_algo(df, trainingSet=1000, learningRate=0.1):
     m = len(df)
     theta = np.array([0.0, 0.0])
     for _ in range(trainingSet):
@@ -47,73 +47,31 @@ def main():
         price = np.array(df_params['price'])
         mileage_norm = (mileage - np.mean(mileage)) / np.std(mileage)
         
-        # Calcul de la moyenne
         mean_x = 1 / len(df_params['km']) * df_params['km'].sum()
         print("Mean:", mean_x)
 
-        # Calcul de l'écart-type
         standard_x = ((1 / len(df_params['km'])) * (df_params['km'].apply(lambda x: (x - mean_x)**2).sum()))**0.5
         print("Standard deviation:", standard_x)
 
-
-        # Normalisation des données
         scaled_x = df_params['km'].apply(lambda x: (x - mean_x) / standard_x)
         print("Scaled values:", scaled_x)
 
-        # Calcul de la moyenne
         mean_y = 1 / len(df_params['price']) * df_params['price'].sum()
         print("Mean:", mean_y)
 
-        # Calcul de l'écart-type
         standard_y = ((1 / len(df_params['price'])) * (df_params['price'].apply(lambda y: (y - mean_y)**2).sum()))**0.5
         print("Standard deviation:", standard_y)
 
-        # Normalisation des données
         scaled_y = df_params['price'].apply(lambda y: (y - mean_y) / standard_y)
-        # print("Scaled values:", scaled_y)
 
+        normalized_df = df_params.copy()
+        normalized_df["km"] = scaled_x
+        normalized_df["price"] = scaled_y
 
-        # min_val_x = df_params['km'].min()
-        # max_val_x = df_params['km'].max()
-        # min_val_y = df_params['price'].min()
-        # max_val_y = df_params['price'].max()
-        # scaled_values_x = (scaled_x - min_val_x) / (max_val_x - min_val_x)
-        # scaled_values_y = (scaled_y - min_val_y) / (max_val_y - min_val_y)
-
-        normalized_df = df_params
-        # normalized_df["km"] = scaled_values_x
-        # normalized_df["price"] = scaled_values_y
-        min_val = df_params['km'].min()
-        max_val = df_params['km'].max()
-        min_price = df_params['price'].min()
-        max_price = df_params['price'].max()
-
-        # Appliquer la formule de mise à l'échelle Min-Max pour normaliser les données
-        scaled_values = (df_params['km'] - min_val) / (max_val - min_val)
-
-        normalized_df["km"] = scaled_values
-        normalized_df["price"] = (df_params['price'] - min_price) / (max_price - min_price)
-
-        print(normalized_df)
         theta = np.array(training_algo(normalized_df))
 
-
-        denormalized_theta = theta
-        # denormalized_theta = np.zeros(2)
-
-        mean_y = df_params['price'].mean()
-        standard_y = df_params['price'].std()
-        # Désnormalisation de theta0
-        # denormalized_theta[0] = denormalized_theta[0] * standard_y + mean_y
-
-        # Désnormalisation de theta1
-        # denormalized_theta[1] = denormalized_theta[1] * standard_y / standard_x
-
-        
-        predictvalue = denormalized_theta[0] + (denormalized_theta[1] * 0.93)
-        print(f"Theta values after training: {denormalized_theta} , predict = {predictvalue}")
-
-
+        denormalized_theta = theta * standard_y / standard_x
+        denormalized_theta[0] = denormalized_theta[0] - denormalized_theta[1] * mean_x + mean_y
 
         min_X = df_params['km'].min()
         max_X = df_params['km'].max()
