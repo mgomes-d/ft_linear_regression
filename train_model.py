@@ -24,7 +24,6 @@ def training_algo(df, trainingSet=1000, learningRate=0.1):
     for _ in range(trainingSet):
         df_estimate_price = theta[0] + (theta[1] * df["km"])
         df_sum = df_estimate_price - df["price"]
-        # print(df_sum.values, " and ", df_sum.sum(), "and", sum(df_sum))
         gradient_theta0 = (1 / m) * df_sum.sum()
         tmptheta0 = learningRate * gradient_theta0
         gradient_theta1 = (1 / m) * (df_sum * df["km"]).sum()
@@ -33,6 +32,12 @@ def training_algo(df, trainingSet=1000, learningRate=0.1):
         theta[1] -= float(tmptheta1)
     return theta
 
+def save_theta(theta):
+    try:
+        theta_df = pd.DataFrame(theta.reshape(1, -1), columns=['theta0', 'theta1'])
+        theta_df.to_csv("parameters.csv", index=False)
+    except Exception as e:
+        print("Error occurred while saving theta values:", e)
 
 def main():
     try:
@@ -48,19 +53,14 @@ def main():
         mileage_norm = (mileage - np.mean(mileage)) / np.std(mileage)
         
         mean_x = 1 / len(df_params['km']) * df_params['km'].sum()
-        print("Mean:", mean_x)
 
         standard_x = ((1 / len(df_params['km'])) * (df_params['km'].apply(lambda x: (x - mean_x)**2).sum()))**0.5
-        print("Standard deviation:", standard_x)
 
         scaled_x = df_params['km'].apply(lambda x: (x - mean_x) / standard_x)
-        print("Scaled values:", scaled_x)
 
         mean_y = 1 / len(df_params['price']) * df_params['price'].sum()
-        print("Mean:", mean_y)
 
         standard_y = ((1 / len(df_params['price'])) * (df_params['price'].apply(lambda y: (y - mean_y)**2).sum()))**0.5
-        print("Standard deviation:", standard_y)
 
         scaled_y = df_params['price'].apply(lambda y: (y - mean_y) / standard_y)
 
@@ -72,7 +72,7 @@ def main():
 
         denormalized_theta = theta * standard_y / standard_x
         denormalized_theta[0] = denormalized_theta[0] - denormalized_theta[1] * mean_x + mean_y
-
+        save_theta(denormalized_theta)
         min_X = df_params['km'].min()
         max_X = df_params['km'].max()
         x_line = np.linspace(min_X, max_X, 100)
@@ -84,6 +84,7 @@ def main():
         plt.ylabel("Price")
         plt.title("Linear Regression")
         plt.show()
+
     except AssertionError as msg:
         print(msg)
 
