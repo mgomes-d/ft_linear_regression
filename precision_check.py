@@ -30,7 +30,8 @@ def main():
 
     if theta is not None and df is not None:
         rmse = calculate_rmse(df, theta)
-        print("RMSE:", rmse)
+        accuracy = 1 - (rmse / (df["price"].max() - df["price"].min()))
+        print("Accuracy: {:.3f}".format(accuracy))
     else:
         print("Error loading files.")
 

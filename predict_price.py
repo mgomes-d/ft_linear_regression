@@ -18,9 +18,14 @@ def load_file(path: str) -> pd.DataFrame:
 
 def main():
     df = load_file("parameters.csv")
-    value = input("give a certain mileage:\n")
-    predict = df["theta0"].values.astype(float) + (df["theta1"].values.astype(float) * float(value))
-    print("the predict =",predict[0])
+    if df is not None:
+        try:
+            value = input("give a certain mileage:\n")
+            predict = df["theta0"].values.astype(float) + (df["theta1"].values.astype(float) * float(value))
+            print("the predict =",predict[0])
+        except Exception as msg:
+            print(msg)
+
 
 if __name__ == "__main__":
     main()
