@@ -17,6 +17,47 @@ def load_file(path: str) -> pd.DataFrame:
         print(msg)
         return None
 
+class LinearRegression:
+    def __init__(self, df):
+        self.df = self.standarisation(df)
+        self.theta = np.array([0.0, 0.0])
+
+    def standarisation(self, df):
+        mean_x = (1 / df["km"].len()) * df["km"].sum()
+        self.standard_x = (df["km"].apply(lambda x: (x - mean_x) **0.5).sum() / df["km"].len())
+        mean_y = (1 / df["price"].len()) * df["price"].sum()
+        self.standard_y = (df["price"].apply(lambda x: (x - mean_x) **0.5).sum() / df["price"].len())
+        std_df = df.copy()
+        std_df["km"].apply(lambda x: (x - mean_x) / self.standard_x)
+        std_df["price"].apply(lambda y: (y - mean_y) / self.standard_y)
+        return std_df
+    def training(self, training_set=1000, learning_rate=0.1):
+        m = len(self.df)
+        theta = np.array([0.0, 0.0])
+        for _ in range(training_set):
+            estimate_price = theta[0] + (theta[1] * self.df["km"])
+            price_diff = estimate_price - df["price"]
+            gradient_theta0 = (1 / m) * price_diff.sum()
+            tmp_theta0 = learning_rate * gradient_theta0
+            gradient_theta1 = (1 / m) * (price_diff * self.df["km"]).sum()
+            tmp_theta1 = learning_rate * gradient_theta1
+            theta -= [float(tmp_theta0), float(tmp_theta1)]
+        self.theta = theta
+        self.save_theta(theta)
+    def 
+    def save_theta(self, theta):
+        try:
+            theta_df = pd.DataFrame(theta.reshape(1, -1), columns=['theta0', 'theta1'])
+            theta_df.to_csv("parameters.csv", index=False)
+        except Exception as e:
+            print("Error occurred while saving theta values:", e)
+    def show_graph(self, df):
+        plt.scatter(df["km"], df["price"])
+        
+        plt.xlabel("Kilometers")
+        plt.ylabel("Price")
+        plt.title("Linear Regression")
+
 
 def training_algo(df, trainingSet=1000, learningRate=0.1):
     m = len(df)
@@ -32,13 +73,6 @@ def training_algo(df, trainingSet=1000, learningRate=0.1):
         theta[1] -= float(tmptheta1)
     return theta
 
-def save_theta(theta):
-    try:
-        #1 column et -1 permet de faire automatiquement
-        theta_df = pd.DataFrame(theta.reshape(1, -1), columns=['theta0', 'theta1'])
-        theta_df.to_csv("parameters.csv", index=False)
-    except Exception as e:
-        print("Error occurred while saving theta values:", e)
 
 def main():
     try:
@@ -51,29 +85,6 @@ def main():
 
         mileage = np.array(df_params['km'])
         price = np.array(df_params['price'])
-        mileage_norm = (mileage - np.mean(mileage)) / np.std(mileage)
-        
-        mean_x = 1 / len(df_params['km']) * df_params['km'].sum()
-
-        standard_x = ((1 / len(df_params['km'])) * (df_params['km'].apply(lambda x: (x - mean_x)**2).sum()))**0.5
-
-        scaled_x = df_params['km'].apply(lambda x: (x - mean_x) / standard_x)
-
-        mean_y = 1 / len(df_params['price']) * df_params['price'].sum()
-
-        standard_y = ((1 / len(df_params['price'])) * (df_params['price'].apply(lambda y: (y - mean_y)**2).sum()))**0.5
-
-        scaled_y = df_params['price'].apply(lambda y: (y - mean_y) / standard_y)
-
-        normalized_df = df_params.copy()
-        normalized_df["km"] = scaled_x
-        normalized_df["price"] = scaled_y
-
-        theta = np.array(training_algo(normalized_df))
-
-        denormalized_theta = theta * standard_y / standard_x
-        denormalized_theta[0] = denormalized_theta[0] - denormalized_theta[1] * mean_x + mean_y
-        save_theta(denormalized_theta)
         min_X = df_params['km'].min()
         max_X = df_params['km'].max()
         x_line = np.linspace(min_X, max_X, 100)
