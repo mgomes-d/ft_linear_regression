@@ -23,9 +23,9 @@ class LinearRegression:
         self.theta = np.array([0.0, 0.0])
 
     def standarisation(self, df):
-        mean_x = (1 / df["km"].len()) * df["km"].sum()
+        self.mean_x = (1 / df["km"].len()) * df["km"].sum()
         self.standard_x = (df["km"].apply(lambda x: (x - mean_x) **0.5).sum() / df["km"].len())
-        mean_y = (1 / df["price"].len()) * df["price"].sum()
+        self.mean_y = (1 / df["price"].len()) * df["price"].sum()
         self.standard_y = (df["price"].apply(lambda x: (x - mean_x) **0.5).sum() / df["price"].len())
         std_df = df.copy()
         std_df["km"].apply(lambda x: (x - mean_x) / self.standard_x)
@@ -42,9 +42,13 @@ class LinearRegression:
             gradient_theta1 = (1 / m) * (price_diff * self.df["km"]).sum()
             tmp_theta1 = learning_rate * gradient_theta1
             theta -= [float(tmp_theta0), float(tmp_theta1)]
+        theta = self.destandarisation(theta)
         self.theta = theta
         self.save_theta(theta)
-    def 
+    def destandarisation(self, theta):
+        new_theta = theta * (self.standard_y / self.standard_x) + self.mean_y - theta * (self.standard_y / self.standard_x) * self.mean_x
+        return new_theta
+
     def save_theta(self, theta):
         try:
             theta_df = pd.DataFrame(theta.reshape(1, -1), columns=['theta0', 'theta1'])
@@ -52,6 +56,10 @@ class LinearRegression:
         except Exception as e:
             print("Error occurred while saving theta values:", e)
     def show_graph(self, df):
+        min_X = df["km"].min()
+        max_X = df["km"].max()
+        x_line = np.linspace(min_X, max_X, 100)
+        y_line = 
         plt.scatter(df["km"], df["price"])
         
         plt.xlabel("Kilometers")
