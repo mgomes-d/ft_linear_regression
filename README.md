@@ -9,6 +9,7 @@ This project introduces the fundamentals of machine learning by implementing a b
 * Training program to compute model parameters (θ₀, θ₁) using gradient descent
 * Prediction program to estimate car prices based on mileage
 * Saves and reuses trained parameters for future predictions
-* (Optional) Bonus: Data visualization and precision evaluation
+* Bonus: Data visualization and precision evaluation
 
-**Tech stack:** Python (or C/other language you used), standard libraries only
+**Tech stack:** Python, standard libraries only
+
